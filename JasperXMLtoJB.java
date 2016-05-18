@@ -1,4 +1,4 @@
-package deni.jasperxmltojb;
+package JasperXMLtoJB;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,19 +34,19 @@ public class JasperXMLtoJB {
 
 		/* Verifica se o arquivo foi passado por parametro */
 		if (args[0] == null) {
-			System.out.println("ERRO: Necessita de passar o arquivo .jrxml por par‚metro");
+			System.out.println("ERRO: Necessita de passar o arquivo .jrxml por par√¢metro");
 			return;
 		}
 
 		/* Verifica se o nome da classe foi passada por parametro */
 		if (args[1] == null) {
-			System.out.println("ERRO: Necessita de passar o nome da classe por par‚metro");
+			System.out.println("ERRO: Necessita de passar o nome da classe por par√¢metro");
 			return;
 		}
 
-		/* Verifica se o arquivo passado È JRXML */
+		/* Verifica se o arquivo passado √© JRXML */
 		if (!args[0].substring(args[0].length() - 6, args[0].length()).equals(".jrxml")) {
-			System.out.println("ERRO: Arquivo n„o È JRXML");
+			System.out.println("ERRO: Arquivo n√£o √© JRXML");
 			return;
 		}
 
@@ -57,7 +57,7 @@ public class JasperXMLtoJB {
 			fields = new ArrayList<>();
 			attributes = new ArrayList<>();
 		} catch (FileNotFoundException e) {
-			System.out.println("ERRO: Arquivo n„o encontrado.");
+			System.out.println("ERRO: Arquivo n√£o encontrado.");
 		}
 
 		/* Efetua a leitura dos arquivos */
@@ -149,6 +149,6 @@ public class JasperXMLtoJB {
 		
 		bw.flush();
 		
-		System.out.println("OperaÁ„o realizada com sucesso!");
+		System.out.println("Opera√ß√£o realizada com sucesso!");
 	}
 }
