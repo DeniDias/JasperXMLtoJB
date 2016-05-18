@@ -1,4 +1,4 @@
-package deni.jasperxmltojb;
+package JasperXMLtoJB;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ public class Attribute {
 	
 	public ArrayList<String> getGetterLines() throws Exception{
 		if (name == null){
-			throw new Exception("ERRO: Nome do atributo n„o definido.");
+			throw new Exception("ERRO: Nome do atributo n√£o definido.");
 		}
 		getter.add("	public "+type+" "+method+" {");
 		getter.add("		return "+name+";");
@@ -55,7 +55,7 @@ public class Attribute {
 	
 	public ArrayList<String> getSetterLines() throws Exception{
 		if (name == null){
-			throw new Exception("ERRO: Nome do atributo n„o definido.");
+			throw new Exception("ERRO: Nome do atributo n√£o definido.");
 		}
 		setter.add("	public void "+method+" {");
 		setter.add("		this."+name+" = "+" name");
