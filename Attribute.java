@@ -1,4 +1,4 @@
-package JasperXMLtoJB;
+package br.deni.jasperxmltojb;
 
 import java.util.ArrayList;
 
@@ -6,8 +6,9 @@ public class Attribute {
 
 	private String type;
 	private String name;
-	private String method_get;
-	private String method_set;
+	private String methodGet;
+	private String methodSet;
+	private String methodSetForFunctionFile;
 	private ArrayList<String> getter;
 	private ArrayList<String> setter;
 
@@ -21,11 +22,15 @@ public class Attribute {
 	}
 
 	public String getMethodGet(){
-		return this.method_get;
+		return this.methodGet;
 	}
-
+	
 	public String getMethodSet(){
-		return this.method_set;
+		return this.methodSet;
+	}
+	
+	public String getMethodSetForFunction(){
+		return this.methodSetForFunctionFile;
 	}
 
 	public String getName(){
@@ -35,16 +40,17 @@ public class Attribute {
 	public void setType(String type){
 		this.type = type;
 		if (name != null){
-			method_get = "get" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "()";
-			method_set = "set" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "("+type+" "+name+")";
+			methodGet = "get" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "()";
+			methodSet = "set" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "("+type+" "+name+")";
+			methodSetForFunctionFile = "set" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "(x)";
 		}
 	}
 
 	public void setName(String name){
 		this.name = name;
 		if (type != null){
-			method_get = "get" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "()";
-			method_set = "set" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "("+type+" "+name+")";
+			methodGet = "get" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "()";
+			methodSetForFunctionFile = "set" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length()) + "(x)";
 		}
 	}
 
@@ -52,7 +58,7 @@ public class Attribute {
 		if (name == null){
 			throw new Exception("ERRO: Nome do atributo n�o definido.");
 		}
-		getter.add("	public "+type+" "+method_get+" {");
+		getter.add("	public "+type+" "+methodGet+" {");
 		getter.add("		return "+name+";");
 		getter.add("	}");
 		return getter;
@@ -62,8 +68,8 @@ public class Attribute {
 		if (name == null){
 			throw new Exception("ERRO: Nome do atributo n�o definido.");
 		}
-		setter.add("	public void "+method_set+" {");
-		setter.add("		this."+name+" = "+" "+name+";");
+		setter.add("	public void "+methodSet+" {");
+		setter.add("		this."+name+" = "+name+";");
 		setter.add("	}");
 		return setter;
 	}
