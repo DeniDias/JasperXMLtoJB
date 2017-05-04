@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Read the JasperXML file
- * 
+ *
  * @author denidiasjr
  */
 public class JasperXMLReader {
@@ -22,19 +22,24 @@ public class JasperXMLReader {
     public JasperXMLReader(String file) throws Exception {
         this.jasperFile = Paths.get(file);
 
-        /* Certify the file exists */
+        // Certify the file exists
         if (!jasperFile.toFile().exists()) {
             throw new IOException();
         }
     }
+    
+    /* Read the name of the JasperFile and set it to CamelCase */
+    public String readJasperName(){
+        return JavaUtils.toUpperCamelCase(this.jasperFile.getFileName().toString().split("\\.")[0]);
+    }
 
     /* Read the fields of the JasperFile and return a
-    *  an ArrayList with Field's objects
-     */
+    *  an ArrayList with JasperField's objects
+    */
     @SuppressWarnings("empty-statement")
-    public ArrayList<Field> readFields() throws Exception {
+    public ArrayList<JasperField> readJasperFields() throws Exception {
 
-        ArrayList<Field> fields = new ArrayList<>();
+        ArrayList<JasperField> fields = new ArrayList<>();
 
         FileReader fr = new FileReader(jasperFile.toFile());
         BufferedReader reader = new BufferedReader(fr);
@@ -43,8 +48,8 @@ public class JasperXMLReader {
 
         while (line != null) {
 
-            if (line.contains("<field")) {
-                fields.add(catchField(line));
+            if (line.contains("<field ")) {
+                fields.add(catchJasperField(line));
             }
             line = reader.readLine();
         }
@@ -53,13 +58,13 @@ public class JasperXMLReader {
     }
 
     /* Catch the name and the type of a field line in JasperFile
-    *  and create a Field object.
-     */
-    private Field catchField(String fieldLine) {
+    *  and create a JasperField object.
+    */
+    private JasperField catchJasperField(String fieldLine) {
 
         List<String> fieldSplit = Arrays.asList(fieldLine.split(" "));
 
-        /* TODO Try to improve this for */
+        // Catch name and type reading the attributes
         String name = null, type = null;
         for (String attribute : fieldSplit) {
 
@@ -72,11 +77,10 @@ public class JasperXMLReader {
             }
         }
 
-        return new Field(name, type);
+        return new JasperField(name, type);
     }
 
-    /* Catch an entire attribute and clean it to only get the value
-     */
+    /* Catch an entire attribute and clean it to only get the value */
     private String catchValue(String attribute) {
         attribute = attribute.replace("\"", "").replace("/>", "");
         return attribute.substring(attribute.indexOf('=') + 1);

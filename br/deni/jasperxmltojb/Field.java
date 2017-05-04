@@ -6,8 +6,8 @@
 package br.deni.jasperxmltojb;
 
 /**
- * Abstract fields from JasperXML
- * 
+ * Retrieve fields from JasperXML
+ *
  * @author denidiasjr
  */
 public class Field {
@@ -37,11 +37,11 @@ public class Field {
     public String getVariable(boolean optionImport) {
         String type = this.type;
 
-        /* If import option is set, alternate to simple class name on variable */
+        // If import option is set, alternate to simple class name on variable
         if (optionImport) {
             type = this.typeSimple;
         }
-        
+
         return new StringBuilder()
                 .append("private ")
                 .append(type)
@@ -54,7 +54,7 @@ public class Field {
     public String getSetter(boolean optionImport) {
         String type = this.type;
 
-        /* If import option is set, alternate to simple class name on setter */
+        // If import option is set, alternate to simple class name on setter
         if (optionImport) {
             type = this.typeSimple;
         }
@@ -104,8 +104,8 @@ public class Field {
     }
 
     public void setTypeSimple() {
-        String[] typeSplit = this.type.split("\\.");
-        this.typeSimple = typeSplit[typeSplit.length - 1];
+      String[] typeSplit = this.type.split("\\.");
+      this.typeSimple = typeSplit[typeSplit.length - 1];
     }
 
     @Override

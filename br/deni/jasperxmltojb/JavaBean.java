@@ -1,209 +1,203 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.deni.jasperxmltojb;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
  * Generate the JavaBean file
- * 
+ *
  * @author denidiasjr
  */
 public class JavaBean {
 
-    /* Class name of the JavaBean */
+    /* Class name of JavaBean */
     private String className;
 
-    /* Set the class declaration into the file */
-    private String classDeclaration;
+    /* Nome of JavaBean file */
+    private String fileName;
 
-    /* Package of the JavaBean */
+    /* Package of JavaBean */
     private String packageName;
 
-    /* Set the fields of the JavaBean */
-    private ArrayList<Field> fields;
+    /* Set fields of JavaBean */
+    private ArrayList<JasperField> fields;
 
-    /* JavaBean path */
-    private Path path;
+    /* Buffer of JavaBean */
+    private HashMap<String, String> content;
 
-    /* Serializable string */
-    private String serializableString;
-
-    /* Option to import the class on JavaBean */
-    private boolean optionImport;
-
+    /* Constructors */
     public JavaBean(String className) {
         this.className = className;
-        this.serializableString = "java.io.Serializable";
-        this.setClassDeclaration();
-        this.optionImport = false;
+        this.setDefaultOptions();
     }
 
     public JavaBean(String className, String packageName) {
-        this.className = className.trim();
-        this.serializableString = "java.io.Serializable";
-        this.setClassDeclaration();
-        this.packageName = packageName.trim();
-        this.optionImport = false;
-    }
-
-    /*
-    * Finally, export the JavaBean file
-     */
-    public void exportJavaBean() throws IOException {
-
-        /* If path was not set, export in the current directory */
-        if (this.path == null) {
-            this.path = Paths.get(this.className + ".java");
-        } else {
-            String absolutePath = new StringBuilder()
-                    .append(this.path.toString())
-                    .append("/")
-                    .append(this.className)
-                    .append(".java")
-                    .toString();
-            this.path = Paths.get(absolutePath);
-        }
-
-        /* Check if fields are set */
-        if (this.fields == null) {
-            throw new NullPointerException("Fields not setted!");
-        }
-
-        /* Open the file to write */
-        FileWriter fileWriter = null;
-        BufferedWriter bufferedWriter = null;
-
-        try {
-            fileWriter = new FileWriter(this.path.toString());
-            bufferedWriter = new BufferedWriter(fileWriter);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
-        /* if the package is not null put it on the file */
-        if (this.packageName != null) {
-            bufferedWriter.write("package ");
-            bufferedWriter.write(this.packageName);
-            bufferedWriter.write(";\n\n");
-        }
-
-        /* If the import is set */
-        if (this.optionImport) {
-
-            /* Import java.io.serializable */
-            bufferedWriter.write("import java.io.Serializable;");
-            bufferedWriter.write("\n");
-            
-            /* Catch the imports */
-            HashSet<String> hashImports = new HashSet<>();
-            
-            /* Get the fields and write them on the java bean */
-            for (Field field : this.fields) {
-
-                /* If hashImports contains the declaration, jump it! */
-                if (!hashImports.contains(field.getImportDeclaration())) {
-                    hashImports.add(field.getImportDeclaration());
-                    bufferedWriter.write(field.getImportDeclaration());
-                    bufferedWriter.write("\n");
-                }
-            }                       
-        }
-
-        bufferedWriter.write("\n");
-
-        /* Write the commentary about the library */
-        bufferedWriter.write("/* Generated with JasperXMLtoJB \n");
-        bufferedWriter.write(" * Github: https://github.com/denidias/JasperXMLtoJB\n");
-        bufferedWriter.write(" * @author denidiasjr\n");
-        bufferedWriter.write(" * \n");
-        bufferedWriter.write(" */\n\n");
-        
-        /* Write the class */
-        bufferedWriter.write(classDeclaration);
-
-        /* Write the variables */
-        for (Field field : this.fields) {
-            bufferedWriter.write("\t");
-            bufferedWriter.write(field.getVariable(this.optionImport));
-            bufferedWriter.write("\n");
-        }
-        bufferedWriter.write("\n\n");
-
-        /* Write the getters and setters */
-        for (Field field : this.fields) {
-            bufferedWriter.write("\t");
-            bufferedWriter.write(field.getGetter(this.optionImport));
-            bufferedWriter.write("\n\n");
-            bufferedWriter.write("\t");
-            bufferedWriter.write(field.getSetter(this.optionImport));
-            bufferedWriter.write("\n\n");
-        }
-        bufferedWriter.write("}");
-
-        /* Close connections */
-        bufferedWriter.close();
-        fileWriter.close();
-
-        System.out.println("JavaBean generated successfully! :)");
-    }
-
-    public String getPackage() {
-        return this.packageName;
+        this.className = className;
+        this.packageName = packageName;
+        this.setDefaultOptions();
     }
 
     public void setPackage(String packageName) {
-        this.packageName = packageName.trim();
+        this.packageName = packageName;
     }
 
-    public ArrayList<Field> getFields() {
+    public ArrayList<JasperField> getFields() {
         return this.fields;
     }
 
-    public void setFields(ArrayList<Field> fields) {
+    public void setFields(ArrayList<JasperField> fields) {
         this.fields = fields;
     }
 
-    public Path getPath() {
-        return path;
+    private void setDefaultOptions() {
+        this.fileName = this.className + ".java";
+        this.content = new HashMap();
     }
 
-    public void setPath(Path path) {
-        if (!path.toFile().isDirectory()) {
-            throw new IllegalArgumentException("Path passed in argument not exists!");
+    /* Get imports from JasperFields */
+    private String getImports() {
+
+        HashSet<String> imports = new HashSet();
+        StringBuilder sb = new StringBuilder();
+
+        for (JasperField field : this.fields) {
+
+            // Check if class was already imported
+            if (!imports.contains(field.getFieldClass())) {
+                sb.append("import ");
+                sb.append(field.getFieldClass());
+                sb.append(";\n");
+                imports.add(field.getFieldClass());
+            }
         }
-        this.path = path;
-        System.out.println(this.path);
+
+        return sb.toString();
+    }
+    
+    /* Get attributes from fields */
+    private String getAttributes(){
+        StringBuilder sb = new StringBuilder();
+        
+        for (JasperField field : this.fields){
+            sb.append("\tprivate ");
+            sb.append(field.getFieldShortClass());
+            sb.append(" ");
+            sb.append(field.getFieldName());
+            sb.append(";\n");
+        }
+        
+        return sb.toString();
     }
 
-    private void setClassDeclaration() {
-        this.classDeclaration = new StringBuilder()
-                .append("public class ")
-                .append(this.className)
-                .append(" implements ")
-                .append(this.serializableString)
-                .append(" {")
-                .append("\n\n")
-                .toString();
+    /* Get getter and setter functions from Field */
+    private String getGetterAndSetter(JasperField field) {
+        StringBuilder sb = new StringBuilder();
+
+        // Getter
+        sb.append("\tpublic ");
+        sb.append(field.getFieldShortClass());
+        sb.append(" get");
+        sb.append(JavaUtils.toUpperCamelCase(field.getFieldName()));
+        sb.append("(){\n\t\treturn ");
+        sb.append(field.getFieldName());
+        sb.append(";\n\t}\n\n");
+        
+        // Setter
+        sb.append("\tpublic void set");
+        sb.append(JavaUtils.toUpperCamelCase(field.getFieldName()));
+        sb.append("(");
+        sb.append(field.getFieldShortClass());
+        sb.append(" ");
+        sb.append(field.getFieldName());
+        sb.append("){\n\t\tthis.");
+        sb.append(field.getFieldName());
+        sb.append(" = ");
+        sb.append(field.getFieldName());
+        sb.append(";\n\t}\n\n");
+        
+        return sb.toString();
     }
 
-    /* Set if the classes of jrxml will be imported  */
-    public void setImport(boolean optionImport) {
-        this.optionImport = optionImport;
+    /* 
+    *   TODO Create function to render the JavaBean 
+    *   
+    *   Function will buffer JavaBean content before write in the file 
+    *
+     */
+    public void render() {
 
-        if (optionImport) {
-            this.serializableString = "Serializable";
-            this.setClassDeclaration();
+        // Check if package name is set and render it
+        if (packageName != null) {
+            content.put("package", "package " + packageName + ";\n");
+        }
+
+        // Get imports and attributes
+        content.put("imports", getImports());
+        content.put("attributes", getAttributes());
+       
+        // Catch getters and setters
+        for (JasperField field : this.fields) {
+            content.put(field.getFieldName(), getGetterAndSetter(field));
         }
     }
 
+    /* 
+    *  Save JavaBean
+    */
+    public void save(Path path) throws IOException {
+        
+        // Check if JavaBean was rendered before
+        if (content.get("attributes") == null){
+            this.render();
+        }
+
+        // Check path and set filename on it
+        if (path == null) {
+            path = Paths.get(this.fileName);
+        } else if (Files.isDirectory(path)) {
+            path = Paths.get(path + File.separator + this.fileName);
+        } else {
+            path = Paths.get(path.getParent() + File.separator + this.fileName);
+        }
+        
+        // If file exists, delete it
+        if (Files.exists(path)){
+            Files.delete(path);
+        }
+
+        // Create file
+        Files.createFile(path);
+
+        // Vars to write on file
+        FileWriter fw = new FileWriter(path.toFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        // Write content into file
+        bw.write(content.get("package"));
+        bw.newLine();
+        bw.write(content.get("imports"));
+        bw.newLine();
+        bw.write("public class "+this.className+" {\n\n");
+        bw.write(content.get("attributes"));
+                bw.newLine();
+
+        for (JasperField field : this.fields) {
+            bw.write(content.get(field.getFieldName()));
+        }
+        bw.write("}");
+        
+        // Close stream
+        bw.close();
+        fw.close();
+        
+        System.out.println("JavaBean generated successfully! :)");
+    }
 }

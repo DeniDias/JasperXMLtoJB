@@ -1,36 +1,28 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package br.deni.jasperxmltojb;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- *  Main program
- * 
- * @author denidiasjr
+ *
+ * @author deni
  */
 public class Main {
     
     public static void main(String[] args) throws Exception {
         
-        if (args.length < 2){
-            throw new IllegalArgumentException("No argument by parameter!");
-        }
+        JasperXMLReader jasperReader = new JasperXMLReader("requerimento_ferias.jrxml");
+        ArrayList<JasperField> fields = jasperReader.readJasperFields();
         
-        JasperXMLReader jasperReader = new JasperXMLReader(args[1]);
-        ArrayList<Field> fields = jasperReader.readFields();
-        
-        String className = "JasperClass";
-        
-        if (args[2] != null){
-            className = args[2];
-        }
-        
-        JavaBean javaBean = new JavaBean(className);
-        
-        if (args[3] != null){
-            javaBean.setPackage(args[3]);
-        }
-        
-        javaBean.setImport(true);
-        javaBean.exportJavaBean();
+        JavaBean javaBean = new JavaBean(jasperReader.readJasperName());
+        javaBean.setPackage("br.deni.jasperxmltojb");
+        javaBean.setFields(fields);
+        javaBean.render();
+        javaBean.save(Paths.get("/home/deni/Desktop/"));
     }
 }
