@@ -185,7 +185,7 @@ public class JavaBean {
         bw.newLine();
         bw.write(content.get("imports"));
         bw.newLine();
-        bw.write("public class "+this.className+" {\n\n");
+        bw.write("public class "+this.className+" implements java.io.Serializable {\n\n");
         bw.write(content.get("attributes"));
                 bw.newLine();
 

@@ -1,6 +1,7 @@
 package br.deni.jasperxmltojb;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,6 +27,16 @@ public class JasperXMLReader {
         if (!jasperFile.toFile().exists()) {
             throw new IOException();
         }
+    }
+    
+    public JasperXMLReader(File file) throws Exception {
+        this.jasperFile = file.toPath();
+
+        // Certify the file exists
+        if (!jasperFile.toFile().exists()) {
+            throw new IOException();
+        }
+        
     }
     
     /* Read the name of the JasperFile and set it to CamelCase */
