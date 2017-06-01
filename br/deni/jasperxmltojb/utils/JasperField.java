@@ -1,4 +1,4 @@
-package br.deni.jasperxmltojb;
+package br.deni.jasperxmltojb.utils;
 
 /**
  * Retrieve fields from JasperXML

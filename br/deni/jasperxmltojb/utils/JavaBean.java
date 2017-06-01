@@ -1,5 +1,7 @@
-package br.deni.jasperxmltojb;
+package br.deni.jasperxmltojb.utils;
 
+import br.deni.jasperxmltojb.utils.JavaUtils;
+import br.deni.jasperxmltojb.utils.JasperField;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -35,18 +37,18 @@ public class JavaBean {
 
     /* Constructors */
     public JavaBean(String className) {
-        this.className = className;
+        this.className = className.trim().replaceAll("\\s+","");
         this.setDefaultOptions();
     }
 
     public JavaBean(String className, String packageName) {
-        this.className = className;
-        this.packageName = packageName;
+        this.className = className.trim().replaceAll("\\s+","");
+        this.packageName = packageName.trim().replaceAll("\\s+","");
         this.setDefaultOptions();
     }
 
     public void setPackage(String packageName) {
-        this.packageName = packageName;
+        this.packageName = packageName.trim().replaceAll("\\s+","");
     }
 
     public ArrayList<JasperField> getFields() {
@@ -133,7 +135,7 @@ public class JavaBean {
     *
      */
     public void render() {
-
+        
         // Check if package name is set and render it
         if (packageName != null) {
             content.put("package", "package " + packageName + ";\n");

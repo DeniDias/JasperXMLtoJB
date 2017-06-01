@@ -1,5 +1,6 @@
-package br.deni.jasperxmltojb;
+package br.deni.jasperxmltojb.utils;
 
+import br.deni.jasperxmltojb.utils.JasperField;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

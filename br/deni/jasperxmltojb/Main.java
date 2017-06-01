@@ -5,6 +5,8 @@
  */
 package br.deni.jasperxmltojb;
 
+import br.deni.jasperxmltojb.utils.JavaBean;
+import br.deni.jasperxmltojb.utils.JasperXMLReader;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
