@@ -5,7 +5,7 @@ JasperXMLtoJB is a tool that convert a .jrxml file to a JavaBean.
 
 You can import his library and use it on your project like this:
 
-```
+```java
 JasperXMLtoJB jasperJB = new JasperXMLtoJB();
         
 jasperJB.setJasperXMLFile("/your/folder/jasper_xml.jrxml");        
